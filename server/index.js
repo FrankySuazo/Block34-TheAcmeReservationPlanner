@@ -6,13 +6,12 @@ const port = 8080;
 const {
   client,
   createTables,
-  createUser,
-  createPlace,
-  createVacations,
-  fetchPlaces,
-  fetchUsers,
-  fetchVacations,
-  destroyVacation,
+  createCustomer,
+  createRestaurant,
+  createReservation,
+  fetchCustomers,
+  fetchRestaurants,
+  destroyReservation,
 } = require("./db");
 
 const init = async () => {
@@ -20,38 +19,38 @@ const init = async () => {
   await createTables();
   const [Mark, James, Victoria, April, Sam, Philly, Spain, Paris, Ghana] =
     await Promise.all([
-      createUser("Mark"),
-      createUser("James"),
-      createUser("Victoria"),
-      createUser("April"),
-      createUser("Sam"),
+      createCustomer("Mark"),
+      createCustomer("James"),
+      createCustomer("Victoria"),
+      createCustomer("April"),
+      createCustomer("Sam"),
 
-      createPlace("Philly"),
-      createPlace("Spain"),
-      createPlace("Paris"),
-      createPlace("Ghana"),
+      createRestaurant("Philly"),
+      createRestaurant("Spain"),
+      createRestaurant("Paris"),
+      createRestaurant("Ghana"),
 
-      destroyVacation,
+      destroyReservation,
     ]);
 
   const [vacayOne, vacayTwo, vacayThree] = await Promise.all([
-    createVacations({
+    createRestaurant({
       departure_date: "",
-      user_id: April.user_id,
-      place_id: Paris.place_id,
+      customers_id: April.customers_id,
+      restaurants_id: Paris.restaurants_id,
     }),
   ]);
 
   console.log(vacayOne);
 
-  console.log(await destroyVacation(vacayOne.vacation_id));
+  console.log(await destroyReservation(vacayOne.revervations_id));
 
   //Testers on console:
   //console.log(Mark, Paris);
-  //console.log(await fetchPlaces());
-  //console.log(await fetchUsers());
-  //console.log(await fetchVacations());
-  console.log(await fetchVacations(), vacayOne);
+  //console.log(await fetchRestaurant());
+  //console.log(await fetchCustomer());
+  //console.log(await fetchReservation());
+  console.log(await fetchReservation(), vacayOne);
 
   app.listen(port, () => {
     console.log("connected at port:" + port + " and the database is seeded");

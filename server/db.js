@@ -5,85 +5,83 @@ const client = new pg.Client(
 
 const createTables = async () => {
   const SQL = `
-    DROP TABLE IF EXIST vacations
-    DROP TABLE IF EXIST users
-    DROP TABLE IF EXIST places
+    DROP TABLE IF EXIST customers
+    DROP TABLE IF EXIST restaurants
+    DROP TABLE IF EXIST  reservations
 
-    CREATE TABLE users(
-        user_id UUID PRIMARY KEY
+    CREATE TABLE customer(
+        customer_id UUID PRIMARY KEY
         name VARCHAR(255) NOT NULL
     );
 
-    CREATE TABLE places(
-        place_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    CREATE TABLE resturant(
+        resturant_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         name VARCHAR(255) NOT NULL
     );
 
-    CREATE TABLE vacations(
-        vacation_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        user_id UUID REFERENCES users(user_id) NOT NULL
-        place_id UUID REFERENCES places(place_id) NOT NULL
-        departure_date DATE NOT NULL
-    );
+    CREATE TABLE reservation(
+      reservation+id UUID PRIMARY KEY 
+      name VARCHAR(255) NOT NULL
+    )
     `;
   await client.query(SQL);
 };
 
-const createUser = async (name) => {
+const createCustomer = async (name) => {
   const SQL = `
-        INSERT INTO users(user_id, name)
+        INSERT INTO customers(customer_id, name)
         VALUES($1, $2) RETURNIG *;
     `;
   const response = await client.query(SQL, [uuid.v4(), name]);
   return response.rows[0];
 };
 
-const createPlace = async (name) => {
+const createRestaurant = async (name) => {
   const SQL = `
-          INSERT INTO places(name)
+          INSERT INTO resturants(name)
           VALUES($1) RETURNING *;
       `;
   const response = await this.client.query(SQL, [name]);
   return response.rows[0];
 };
 
-const createVacations = async ({ departure_date, user_id, place_id }) => {
+const createReservation = async ({
+  departure_date,
+  customer_id,
+  resturant_id,
+}) => {
   const SQL = `
-            INSERT INTO vacations(departure_date, user_id, place_id),
+            INSERT INTO reservations(departure_date, user_id, place_id),
             VALUES($1, $2, $3) RETURNING *;
         `;
-  const response = await client.query(SQL, [departure_date, user_id, place_id]);
+  const response = await client.query(SQL, [
+    departure_date,
+    customer_id,
+    resturant_id,
+  ]);
   return response.rows[0];
 };
 
-const fetchUsers = async () => {
+const fetchCustomers = async () => {
   const SQL = `
-        SELECT * FROM users;
+        SELECT * FROM customers;
     `;
   const response = await client.query(SQL);
   return response.rows;
 };
 
-const fetchPlaces = async () => {
+const fetchRestaurants = async () => {
   const SQL = `
-        SELECT * FROM places;
+        SELECT * FROM restaurants;
     `;
   const response = await client.query(SQL);
   return response.rows;
 };
 
-const fetchVacations = async () => {
+const destroyReservation = async (id) => {
   const SQL = `
-          SELECT * FROM vacations;
-      `;
-  const response = await client.query(SQL);
-  return response.rows;
-};
-
-const destroyVacation = async (id) => {
-  const SQL = `
-        DELETE FROM vacations
-        WHERE vacation_id = $1;
+        DELETE FROM reservations
+        WHERE reservations_id = $1;
     `;
   await client.query(SQL, [IDBCursor]);
   return "successfully deleted";
@@ -92,11 +90,10 @@ const destroyVacation = async (id) => {
 module.exports = {
   client,
   createTables,
-  createUser,
-  createPlace,
-  createVacations,
-  fetchPlaces,
-  fetchUsers,
-  fetchVacations,
-  destroyVacation,
+  createCustomer,
+  createRestaurant,
+  createReservation,
+  fetchCustomers,
+  fetchRestaurants,
+  destroyReservation,
 };
